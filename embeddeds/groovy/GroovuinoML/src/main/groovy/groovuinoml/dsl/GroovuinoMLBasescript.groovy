@@ -95,9 +95,7 @@ abstract class GroovuinoMLBasescript extends Script {
 			String errorStateName = "error_${-> randomNumber}"
 			((GroovuinoMLBinding) this.getBinding()).getGroovuinoMLModel().createExceptionState(errorStateName, actuator, nbBlinking)
 
-			//retrieveing all state
-			def states = ((GroovuinoMLBinding) this.getBinding()).getGroovuinoMLModel().getStates() as Set
-
+			//Retrieve current state
 			def currentState = ((GroovuinoMLBinding) this.getBinding()).getGroovuinoMLModel().getCurrentStateRunning()
 
 			((GroovuinoMLBinding) this.getBinding()).getGroovuinoMLModel().createExceptionTransition(

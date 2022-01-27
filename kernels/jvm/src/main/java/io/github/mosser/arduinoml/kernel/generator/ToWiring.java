@@ -190,45 +190,6 @@ public class ToWiring extends Visitor<StringBuffer> {
 		}
 	}
 
-
-//	@Override
-//	public void visit(ExceptionState state) {
-//		if(context.get("pass") == PASS.ONE){
-//			w(state.getName());
-//			return;
-//		}
-//		if(context.get("pass") == PASS.TWO) {
-//			w("\t\tcase " + state.getName() + ":\n");
-//			for (Action action : state.getActions()) {
-//				action.accept(this);
-//			}
-//			for (Transition transition : state.getTransitions()) {
-//				w("\t\t\tbounceGuard = millis() - lastDebounceTime > debounce;\n");
-//				w(String.format("\t\t\tif ( bounceGuard "));
-//				for (Item item :transition.getItem()) {
-//					item.accept(this);
-//				}
-//				w(") {\n");
-//				w("\t\t\t\tlastDebounceTime = millis();\n");
-//				w("\t\t\t\tcurrentState = " + transition.getNext().getName() + ";\n");
-//				w("\t\t\t\t//error state \n");
-//				w("\t\t\t\tfor (int i = 0; i < "+state.getNbBlinking()+"; ++i) {\n");
-//
-//				w("\t\t\t\t\tdigitalWrite("+state.getActuator().getPin()+", HIGH);\n");
-//				w("\t\t\t\t\tdelay(100);\n");
-//				w("\t\t\t\t\tdigitalWrite("+state.getActuator().getPin()+", LOW);\n");
-//				w("\t\t\t\t\tdelay(100);\n");
-//
-//				w("\t\t\t\t}\n");
-//				w("\t\t\t\tbreak;\n");
-//				w("\t\t\t}\n");
-//				return;
-//			}
-//			w("\t\tbreak;\n");
-//			return;
-//		}
-//	}
-
 	@Override
 	public void visit(Action action) {
 		if(context.get("pass") == PASS.ONE) {
