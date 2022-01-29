@@ -50,8 +50,7 @@ class ArduinoMLGenerator {
 
 	compileActuator(actuator: Actuator): string {
         return `
-		    pinMode(${actuator.pin}, OUTPUT); // ${actuator.name} [Actuator]
-        `
+        pinMode(${actuator.pin}, OUTPUT); // ${actuator.name} [Actuator]`
     }
 	
 	declareSensor(sensor: Sensor): string {
@@ -63,31 +62,29 @@ class ArduinoMLGenerator {
 
 	compileSensor(sensor: Sensor): string {
         return `
-		    pinMode(${sensor.pin}, INPUT);  // ${sensor.name} [Sensor]
-	` }
+        pinMode(${sensor.pin}, INPUT);  // ${sensor.name} [Sensor]` 
+    }
 
 	compileState(state: State): string {
         return `
-				case ${state.name}:
+                case ${state.name}:
 					${state.actions.map(action => this.compileAction(action)).join('')}
-                    ${state.transition !== null ? (this.compileTransition(state.transition) + "\t\t\t\tbreak;") : ''}
-	` 
+                    ${state.transition !== null ? (this.compileTransition(state.transition) + "break;") : ''}
+                ` 
     }
 
 	compileTransition(transition: Transition): string {
-        return `
-                    ${transition.sensor.ref?.name}BounceGuard = millis() - ${transition.sensor.ref?.name}LastDebounceTime > debounce;
+        return `${transition.sensor.ref?.name}BounceGuard = millis() - ${transition.sensor.ref?.name}LastDebounceTime > debounce;
                     if (digitalRead(${transition.sensor.ref?.pin}) == ${transition.value} && ${transition.sensor.ref?.name}BounceGuard) {
                         ${transition.sensor.ref?.name}LastDebounceTime = millis();
-                        currentState = ${transition.sensor.ref?.name};
+                        currentState = ${transition.next.ref?.name};
                     }
-	`
+                    `
 }
 
 	compileAction(action: Action): string {
         return `
-                    digitalWrite(${action.actuator.ref?.pin},${action.value});
-	`
+        digitalWrite(${action.actuator.ref?.pin},${action.value});`
     }
 	
 }

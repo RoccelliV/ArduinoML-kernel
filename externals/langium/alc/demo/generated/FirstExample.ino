@@ -11,39 +11,33 @@
 
 		void setup(){
             
-		    pinMode(12, OUTPUT); // red_led [Actuator]
-        
-		    pinMode(8, INPUT);  // button [Sensor]
-	
+        pinMode(12, OUTPUT); // red_led [Actuator]
+        pinMode(8, INPUT);  // button [Sensor]
 		}
 
 		void loop() {
 			switch(currentState){
                 
-				case off:
+                case off:
 					
-                    digitalWrite(12,LOW);
-	
-                    
+        digitalWrite(12,LOW);
                     buttonBounceGuard = millis() - buttonLastDebounceTime > debounce;
                     if (digitalRead(8) == HIGH && buttonBounceGuard) {
                         buttonLastDebounceTime = millis();
-                        currentState = button;
+                        currentState = on;
                     }
-					break;
-	
-				case on:
+                    break;
+                
+                case on:
 					
-                    digitalWrite(12,HIGH);
-	
-                    
+        digitalWrite(12,HIGH);
                     buttonBounceGuard = millis() - buttonLastDebounceTime > debounce;
                     if (digitalRead(8) == HIGH && buttonBounceGuard) {
                         buttonLastDebounceTime = millis();
-                        currentState = button;
+                        currentState = off;
                     }
-					break;
-	
+                    break;
+                
 			}
 		}
         
