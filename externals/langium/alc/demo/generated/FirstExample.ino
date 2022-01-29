@@ -1,35 +1,49 @@
 
 		//Wiring code generated from an ArduinoML model
 		// Application name: RedButton
-        
 		long debounce = 200;
 		enum STATE {off, on};
+		STATE currentState = off;
 		
-		() => {
-            if (app.initial != null) {
-                return `STATE currentState = ${app.initial}`;
-            }
-            else {
-                return '';
-            }
-        }
-
-		() => {
-            return app.bricks.map(brick => this.declareBrick(brick)).join("\n");
-        }
-
+		bool buttonBounceGuard = false;
+		long buttonLastDebounceTime = 0;
+    
 
 		void setup(){
-            () => {
-            return app.bricks.map(brick => this.compileBrick(brick)).join("\n");
-        }
+            
+		    pinMode(12, OUTPUT); // red_led [Actuator]
+        
+		    pinMode(8, INPUT);  // button [Sensor]
+	
 		}
 
 		void loop() {
 			switch(currentState){
-                () => {
-            return app.states.map(state => this.compileState(state)).join("\n");
-        }
+                
+				case off:
+					
+                    digitalWrite(12,LOW);
+	
+                    
+                    buttonBounceGuard = millis() - buttonLastDebounceTime > debounce;
+                    if (digitalRead(8) == HIGH && buttonBounceGuard) {
+                        buttonLastDebounceTime = millis();
+                        currentState = button;
+                    }
+					break;
+	
+				case on:
+					
+                    digitalWrite(12,HIGH);
+	
+                    
+                    buttonBounceGuard = millis() - buttonLastDebounceTime > debounce;
+                    if (digitalRead(8) == HIGH && buttonBounceGuard) {
+                        buttonLastDebounceTime = millis();
+                        currentState = button;
+                    }
+					break;
+	
 			}
 		}
         
