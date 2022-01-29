@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { CompositeGeneratorNode, processGeneratorNode } from 'langium';
-import { Action, Actuator, App, Brick, isActuator, isSensor, Sensor, State, Transition } from '../language-server/generated/ast';
+import { Action, Actuator, App, Brick, Condition, Conditions, isActuator, isSensor, OPERATOR, Sensor, State, Transition } from '../language-server/generated/ast';
 import { extractDestinationAndName } from './cli-util';
 import path from 'path';
 
@@ -68,20 +68,51 @@ class ArduinoMLGenerator {
 	compileState(state: State): string {
         return `
                 case ${state.name}:
-					${state.actions.map(action => this.compileAction(action)).join('')}
-                    ${state.transition !== null ? (this.compileTransition(state.transition) + "break;") : ''}
+					    ${state.actions.map(action => this.compileAction(action)).join('')}
+                        ${state.transition !== null ? (this.compileTransition(state.transition) + "break;") : ''}
                 ` 
     }
 
 	compileTransition(transition: Transition): string {
-        return `${transition.sensor.ref?.name}BounceGuard = millis() - ${transition.sensor.ref?.name}LastDebounceTime > debounce;
-                    if (digitalRead(${transition.sensor.ref?.pin}) == ${transition.value} && ${transition.sensor.ref?.name}BounceGuard) {
-                        ${transition.sensor.ref?.name}LastDebounceTime = millis();
-                        currentState = ${transition.next.ref?.name};
-                    }
+        return `
+        ${transition.conditions.map(conditions => conditions.conditions.map(condition => this.declareCondition(condition)).join('')).join('')}
+       ${this.compileConditions(transition.conditions)}
+       currentState = ${transition.next.ref?.name};
+    } 
                     `
 }
 
+
+    declareCondition(condition: Condition): string {
+        return condition.sensor.ref != undefined ? this.declareBounceGuard(condition.sensor.ref) : ``;
+    }
+    declareBounceGuard(sensor: Sensor): string {
+       return `${sensor.name}BounceGuard = millis() - ${sensor.name}LastDebounceTime > debounce;`
+    }
+
+    compileConditions(conditions: Conditions[]): string {
+        return `if (${conditions.map(conditions => '(' + conditions.conditions.map(condition => this.compileCondition(condition)).join(conditions.op == undefined ? '' : this.compileOperator(conditions.op)) + ')').join(' && ')})
+            {
+                ${conditions.map(conditions =>conditions.conditions.map(condition => condition.sensor.ref?.name + 'LastDebounceTime = millis();').join('')).join(';')}
+                
+                `
+    }
+
+       
+    compileCondition(condition: Condition): string {
+        return condition.sensor.ref != undefined ?
+            `digitalRead(${condition.sensor.ref?.pin}) == ${condition.value} && ${condition.sensor.ref?.name}BounceGuard` : ''
+        }
+    
+
+    compileOperator(operator: OPERATOR) {
+        switch(operator) {
+            case 'AND':
+                return ' && '
+            case 'OR':
+                return ' || '    
+        }
+    }
 	compileAction(action: Action): string {
         return `
         digitalWrite(${action.actuator.ref?.pin},${action.value});`

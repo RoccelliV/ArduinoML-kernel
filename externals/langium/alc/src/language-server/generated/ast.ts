@@ -44,6 +44,30 @@ export function isBrick(item: unknown): item is Brick {
     return reflection.isInstance(item, Brick);
 }
 
+export interface Condition extends AstNode {
+    readonly $container: Conditions;
+    sensor: Reference<Sensor>
+    value: Signal
+}
+
+export const Condition = 'Condition';
+
+export function isCondition(item: unknown): item is Condition {
+    return reflection.isInstance(item, Condition);
+}
+
+export interface Conditions extends AstNode {
+    readonly $container: Transition;
+    conditions: Array<Condition>
+    op: OPERATOR
+}
+
+export const Conditions = 'Conditions';
+
+export function isConditions(item: unknown): item is Conditions {
+    return reflection.isInstance(item, Conditions);
+}
+
 export interface State extends AstNode {
     readonly $container: App;
     actions: Array<Action>
@@ -59,9 +83,8 @@ export function isState(item: unknown): item is State {
 
 export interface Transition extends AstNode {
     readonly $container: State;
+    conditions: Array<Conditions>
     next: Reference<State>
-    sensor: Reference<Sensor>
-    value: Signal
 }
 
 export const Transition = 'Transition';
@@ -90,14 +113,16 @@ export function isSensor(item: unknown): item is Sensor {
 
 export type Signal = 'HIGH' | 'LOW'
 
-export type PolyDslAstType = 'Action' | 'App' | 'Brick' | 'State' | 'Transition' | 'Actuator' | 'Sensor';
+export type OPERATOR = 'AND' | 'OR'
 
-export type PolyDslAstReference = 'Action:actuator' | 'App:initial' | 'Transition:next' | 'Transition:sensor';
+export type PolyDslAstType = 'Action' | 'App' | 'Brick' | 'Condition' | 'Conditions' | 'State' | 'Transition' | 'Actuator' | 'Sensor';
+
+export type PolyDslAstReference = 'Action:actuator' | 'App:initial' | 'Condition:sensor' | 'Transition:next';
 
 export class PolyDslAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['Action', 'App', 'Brick', 'State', 'Transition', 'Actuator', 'Sensor'];
+        return ['Action', 'App', 'Brick', 'Condition', 'Conditions', 'State', 'Transition', 'Actuator', 'Sensor'];
     }
 
     isInstance(node: unknown, type: string): boolean {
@@ -127,11 +152,11 @@ export class PolyDslAstReflection implements AstReflection {
             case 'App:initial': {
                 return State;
             }
+            case 'Condition:sensor': {
+                return Sensor;
+            }
             case 'Transition:next': {
                 return State;
-            }
-            case 'Transition:sensor': {
-                return Sensor;
             }
             default: {
                 throw new Error(`${referenceId} is not a valid reference id.`);
