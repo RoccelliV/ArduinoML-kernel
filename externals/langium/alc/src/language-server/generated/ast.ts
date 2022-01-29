@@ -44,18 +44,6 @@ export function isBrick(item: unknown): item is Brick {
     return reflection.isInstance(item, Brick);
 }
 
-export interface Signal extends AstNode {
-    readonly $container: Action | Transition;
-    HIGH: 'HIGH'
-    LOW: 'LOW'
-}
-
-export const Signal = 'Signal';
-
-export function isSignal(item: unknown): item is Signal {
-    return reflection.isInstance(item, Signal);
-}
-
 export interface State extends AstNode {
     readonly $container: App;
     actions: Array<Action>
@@ -100,14 +88,16 @@ export function isSensor(item: unknown): item is Sensor {
     return reflection.isInstance(item, Sensor);
 }
 
-export type PolyDslAstType = 'Action' | 'App' | 'Brick' | 'Signal' | 'State' | 'Transition' | 'Actuator' | 'Sensor';
+export type Signal = 'HIGH' | 'LOW'
+
+export type PolyDslAstType = 'Action' | 'App' | 'Brick' | 'State' | 'Transition' | 'Actuator' | 'Sensor';
 
 export type PolyDslAstReference = 'Action:actuator' | 'App:initial' | 'Transition:next' | 'Transition:sensor';
 
 export class PolyDslAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['Action', 'App', 'Brick', 'Signal', 'State', 'Transition', 'Actuator', 'Sensor'];
+        return ['Action', 'App', 'Brick', 'State', 'Transition', 'Actuator', 'Sensor'];
     }
 
     isInstance(node: unknown, type: string): boolean {

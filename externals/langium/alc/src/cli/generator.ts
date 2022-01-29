@@ -23,109 +23,70 @@ class ArduinoMLGenerator {
         return `
 		//Wiring code generated from an ArduinoML model
 		// Application name: ${app.name}
-        
 		long debounce = 200;
 		enum STATE {${app.states.map(state => state.name).join(', ')}};
-		
-		${() => {
-            if(app.initial != null) {
-            return `STATE currentState = ${app.initial}`
-        } else {
-            return ''
-        }}}
-
-		${() => {
-            return app.bricks.map(brick => this.declareBrick(brick)).join("\n")
-        }}
-
+		${app.initial != null ? `STATE currentState = ${app.initial.ref?.name};` : ''}
+		${app.bricks.map(brick => this.declareBrick(brick)).join('')}
 
 		void setup(){
-            ${() => {
-                return app.bricks.map(brick => this.compileBrick(brick)).join("\n")
-            }}
+            ${app.bricks.map(brick => this.compileBrick(brick)).join('')}
 		}
 
 		void loop() {
 			switch(currentState){
-                ${() => {
-                    return app.states.map(state => this.compileState(state)).join("\n")
-                }}
+                ${app.states.map(state => this.compileState(state)).join('')}
 			}
 		}
         `
     }
 
 	declareBrick(b: Brick): string { 
-        return `
-        ${() => {
-            if (isSensor(b))
-             return this.declareSensor(b as Sensor);
-            else
-            return ''
-        }}
-        `
+        return isSensor(b) ? this.declareSensor(b as Sensor) : ''
     }
+
 	compileBrick(b: Brick): string {
-    return `
-    ${() => {
-        if(isSensor(b)) {
-           return this.compileSensor(b as Sensor);
-        } else if (isActuator(b)) {
-            return this.compileActuator(b as Actuator);
-        } else {
-            return '';
-        }
-    }}
-	`
+    return isSensor(b) ? this.compileSensor(b as Sensor) : isActuator(b) ? this.compileActuator(b as Actuator) : ''
     }
 
 	compileActuator(actuator: Actuator): string {
         return `
-		pinMode(${actuator.pin}, OUTPUT); // ${actuator.name} [Actuator]
+		    pinMode(${actuator.pin}, OUTPUT); // ${actuator.name} [Actuator]
         `
     }
 	
 	declareSensor(sensor: Sensor): string {
         return `
-			boolean ${sensor.name}BounceGuard = false;
-			long ${sensor.name}LastDebounceTime = 0;
+		bool ${sensor.name}BounceGuard = false;
+		long ${sensor.name}LastDebounceTime = 0;
     `
     }
 
 	compileSensor(sensor: Sensor): string {
         return `
-		pinMode(${sensor.pin}, INPUT);  // ${sensor.name} [Sensor]
+		    pinMode(${sensor.pin}, INPUT);  // ${sensor.name} [Sensor]
 	` }
 
 	compileState(state: State): string {
         return `
 				case ${state.name}:
-					${state.actions.map(action => this.compileAction(action)).join("\n")}
-                    ${() => {
-                        if(state.transition !== null) {
-                           let res = this.compileTransition(state.transition);
-                           res += "\nbreak;"
-                           return res;
-                        } else {
-                            return ''
-                        }
-                    }}
+					${state.actions.map(action => this.compileAction(action)).join('')}
+                    ${state.transition !== null ? (this.compileTransition(state.transition) + "\t\t\t\tbreak;") : ''}
 	` 
     }
 
 	compileTransition(transition: Transition): string {
         return `
-				${transition.sensor.ref?.name}BounceGuard = millis() - ${transition.sensor.ref?.name}LastDebounceTime > debounce;
-				if( digitalRead(${transition.sensor.ref?.pin}) == ${transition.value} && ${transition.sensor.ref?.name}BounceGuard) {
-					${transition.sensor.ref?.name}LastDebounceTime = millis();
-					currentState = ${transition.sensor.ref?.name};
-				}
+                    ${transition.sensor.ref?.name}BounceGuard = millis() - ${transition.sensor.ref?.name}LastDebounceTime > debounce;
+                    if (digitalRead(${transition.sensor.ref?.pin}) == ${transition.value} && ${transition.sensor.ref?.name}BounceGuard) {
+                        ${transition.sensor.ref?.name}LastDebounceTime = millis();
+                        currentState = ${transition.sensor.ref?.name};
+                    }
 	`
 }
 
 	compileAction(action: Action): string {
         return `
-			digitalWrite(${action.actuator.ref?.pin},${action.value});
+                    digitalWrite(${action.actuator.ref?.pin},${action.value});
 	`
     }
 	
