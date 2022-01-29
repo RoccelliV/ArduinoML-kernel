@@ -448,27 +448,18 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
       "parameters": [],
       "name": "Signal",
       "hiddenTokens": [],
+      "type": "string",
       "alternatives": {
         "$type": "Alternatives",
         "elements": [
           {
-            "$type": "Assignment",
-            "feature": "HIGH",
-            "operator": "=",
-            "terminal": {
-              "$type": "Keyword",
-              "value": "HIGH"
-            },
+            "$type": "Keyword",
+            "value": "HIGH",
             "elements": []
           },
           {
-            "$type": "Assignment",
-            "feature": "LOW",
-            "operator": "=",
-            "terminal": {
-              "$type": "Keyword",
-              "value": "LOW"
-            },
+            "$type": "Keyword",
+            "value": "LOW",
             "elements": []
           }
         ]

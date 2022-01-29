@@ -38,8 +38,7 @@ Action:
 Transition:
 	sensor=[Sensor|ID] 'is' value=Signal '=>' next=[State|ID];
 
-Signal: 
-    HIGH = 'HIGH' | LOW = 'LOW';
+Signal returns string: 'HIGH' | 'LOW';
 
 terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;
