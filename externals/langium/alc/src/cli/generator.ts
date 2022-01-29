@@ -55,7 +55,7 @@ class ArduinoMLGenerator {
 	
 	declareSensor(sensor: Sensor): string {
         return `
-		bool ${sensor.name}BounceGuard = false;
+		boolean ${sensor.name}BounceGuard = false;
 		long ${sensor.name}LastDebounceTime = 0;
     `
     }
