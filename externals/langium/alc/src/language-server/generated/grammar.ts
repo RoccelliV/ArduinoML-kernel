@@ -167,6 +167,14 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
               "$refText": "Sensor"
             },
             "elements": []
+          },
+          {
+            "$type": "RuleCall",
+            "arguments": [],
+            "rule": {
+              "$refText": "Screen"
+            },
+            "elements": []
           }
         ]
       }
@@ -183,6 +191,33 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             "$type": "Keyword",
             "value": "actuator",
             "elements": []
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "[",
+                "elements": []
+              },
+              {
+                "$type": "Assignment",
+                "feature": "brickType",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "arguments": [],
+                  "rule": {
+                    "$refText": "STRING"
+                  }
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": "]"
+              }
+            ],
+            "cardinality": "?"
           },
           {
             "$type": "Assignment",
@@ -227,6 +262,104 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             "$type": "Keyword",
             "value": "sensor",
             "elements": []
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "[",
+                "elements": []
+              },
+              {
+                "$type": "Assignment",
+                "feature": "brickType",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "arguments": [],
+                  "rule": {
+                    "$refText": "STRING"
+                  }
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": "]"
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "name",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "ID"
+              }
+            }
+          },
+          {
+            "$type": "Keyword",
+            "value": ":"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "pin",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "INT"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "Screen",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Keyword",
+            "value": "screen",
+            "elements": []
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Keyword",
+                "value": "[",
+                "elements": []
+              },
+              {
+                "$type": "Assignment",
+                "feature": "brickType",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "arguments": [],
+                  "rule": {
+                    "$refText": "STRING"
+                  }
+                }
+              },
+              {
+                "$type": "Keyword",
+                "value": "]"
+              }
+            ],
+            "cardinality": "?"
           },
           {
             "$type": "Assignment",
@@ -335,11 +468,38 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
       "name": "Action",
       "hiddenTokens": [],
       "alternatives": {
+        "$type": "Alternatives",
+        "elements": [
+          {
+            "$type": "RuleCall",
+            "arguments": [],
+            "rule": {
+              "$refText": "ActuatorAction"
+            },
+            "elements": []
+          },
+          {
+            "$type": "RuleCall",
+            "arguments": [],
+            "rule": {
+              "$refText": "ScreenAction"
+            },
+            "elements": []
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "ActuatorAction",
+      "hiddenTokens": [],
+      "alternatives": {
         "$type": "Group",
         "elements": [
           {
             "$type": "Assignment",
-            "feature": "actuator",
+            "feature": "brick",
             "operator": "=",
             "terminal": {
               "$type": "CrossReference",
@@ -369,6 +529,81 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
               "arguments": [],
               "rule": {
                 "$refText": "Signal"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "ScreenAction",
+      "hiddenTokens": [],
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "brick",
+            "operator": "=",
+            "terminal": {
+              "$type": "CrossReference",
+              "type": {
+                "$refText": "Screen"
+              },
+              "terminal": {
+                "$type": "RuleCall",
+                "arguments": [],
+                "rule": {
+                  "$refText": "ID"
+                }
+              }
+            },
+            "elements": []
+          },
+          {
+            "$type": "Keyword",
+            "value": "<="
+          },
+          {
+            "$type": "Group",
+            "elements": [
+              {
+                "$type": "Assignment",
+                "feature": "prefix",
+                "operator": "=",
+                "terminal": {
+                  "$type": "RuleCall",
+                  "arguments": [],
+                  "rule": {
+                    "$refText": "STRING"
+                  }
+                },
+                "elements": []
+              },
+              {
+                "$type": "Keyword",
+                "value": ":="
+              }
+            ],
+            "cardinality": "?"
+          },
+          {
+            "$type": "Assignment",
+            "feature": "value",
+            "operator": "=",
+            "terminal": {
+              "$type": "CrossReference",
+              "type": {
+                "$refText": "Brick"
+              },
+              "terminal": {
+                "$type": "RuleCall",
+                "arguments": [],
+                "rule": {
+                  "$refText": "ID"
+                }
               }
             }
           }

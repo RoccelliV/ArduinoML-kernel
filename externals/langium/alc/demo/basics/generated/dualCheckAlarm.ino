@@ -1,50 +1,52 @@
 
 		//Wiring code generated from an ArduinoML model
-		// Application name: StateBasedAlarm
+		// Application name: DualCheckAlarm
 		long debounce = 200;
 		enum STATE {off, on};
 		STATE currentState = off;
 		
-		boolean buttonBounceGuard = false;
-		long buttonLastDebounceTime = 0;
+		boolean button1BounceGuard = false;
+		long button1LastDebounceTime = 0;
+    
+		boolean button2BounceGuard = false;
+		long button2LastDebounceTime = 0;
     
 
 		void setup(){
             
-        pinMode(11, OUTPUT); // led [Actuator]
-        pinMode(9, INPUT);  // button [Sensor]
+        pinMode(11, OUTPUT); // buzzer [Actuator]
+        pinMode(10, INPUT);  // button1 [Sensor]
+        pinMode(9, INPUT);  // button2 [Sensor]
 		}
 
 		void loop() {
 			switch(currentState){
                 
                 case off:
-					    
-        digitalWrite(11,LOW);
+					    digitalWrite(11, LOW);
                         
-        buttonBounceGuard = millis() - buttonLastDebounceTime > debounce;
-       if ((digitalRead(9) == HIGH && buttonBounceGuard))
+        button1BounceGuard = millis() - button1LastDebounceTime > debounce;button2BounceGuard = millis() - button2LastDebounceTime > debounce;
+       if ((digitalRead(10)) == HIGH && button1BounceGuard && digitalRead(9)) == HIGH && button2BounceGuard)
             {
-                buttonLastDebounceTime = millis();
+                button1LastDebounceTime = millis();button2LastDebounceTime = millis();
                 
                 
        currentState = on;
-    } 
-                    break;
+    }
+    break;
                 
                 case on:
-					    
-        digitalWrite(11,HIGH);
+					    digitalWrite(11, HIGH);
                         
-        buttonBounceGuard = millis() - buttonLastDebounceTime > debounce;
-       if ((digitalRead(9) == HIGH && buttonBounceGuard))
+        button1BounceGuard = millis() - button1LastDebounceTime > debounce;button2BounceGuard = millis() - button2LastDebounceTime > debounce;
+       if ((digitalRead(10)) == LOW && button1BounceGuard && digitalRead(9)) == LOW && button2BounceGuard)
             {
-                buttonLastDebounceTime = millis();
+                button1LastDebounceTime = millis();button2LastDebounceTime = millis();
                 
                 
        currentState = off;
-    } 
-                    break;
+    }
+    break;
                 
 			}
 		}

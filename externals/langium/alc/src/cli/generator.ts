@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { CompositeGeneratorNode, processGeneratorNode } from 'langium';
-import { Action, Actuator, App, Brick, Condition, Conditions, isActuator, isSensor, OPERATOR, Sensor, State, Transition } from '../language-server/generated/ast';
+import { Action, Actuator, App, Brick, Condition, Conditions, isActuator, isActuatorAction, isScreen, isScreenAction, isSensor, OPERATOR, Screen, Sensor, State, Transition } from '../language-server/generated/ast';
 import { extractDestinationAndName } from './cli-util';
 import path from 'path';
 
@@ -45,12 +45,24 @@ class ArduinoMLGenerator {
     }
 
 	compileBrick(b: Brick): string {
-    return isSensor(b) ? this.compileSensor(b as Sensor) : isActuator(b) ? this.compileActuator(b as Actuator) : ''
+    if (isSensor(b)) {
+        return this.compileSensor(b as Sensor); 
+    } else if (isActuator(b)) {
+        return this.compileActuator(b as Actuator);
+    } else if (isScreen(b)) {
+        return this.compileScreen(b as Screen);
     }
+    return ``
+}
 
 	compileActuator(actuator: Actuator): string {
         return `
         pinMode(${actuator.pin}, OUTPUT); // ${actuator.name} [Actuator]`
+    }
+
+    compileScreen(screen: Screen): string {
+        return `
+        pinMode(${screen.pin}, OUTPUT); // ${screen.name} [Screen]`
     }
 	
 	declareSensor(sensor: Sensor): string {
@@ -68,7 +80,7 @@ class ArduinoMLGenerator {
 	compileState(state: State): string {
         return `
                 case ${state.name}:
-					    ${state.actions.map(action => this.compileAction(action)).join('')}
+					    ${state.actions.map(action => this.compileAction(action)).join(';')};
                         ${state.transition !== null ? (this.compileTransition(state.transition) + "break;") : ''}
                 ` 
     }
@@ -78,8 +90,8 @@ class ArduinoMLGenerator {
         ${transition.conditions.map(conditions => conditions.conditions.map(condition => this.declareCondition(condition)).join('')).join('')}
        ${this.compileConditions(transition.conditions)}
        currentState = ${transition.next.ref?.name};
-    } 
-                    `
+    }
+    `
 }
 
 
@@ -91,7 +103,7 @@ class ArduinoMLGenerator {
     }
 
     compileConditions(conditions: Conditions[]): string {
-        return `if (${conditions.map(conditions => '(' + conditions.conditions.map(condition => this.compileCondition(condition)).join(conditions.op == undefined ? '' : this.compileOperator(conditions.op)) + ')').join(' && ')})
+        return `if (${conditions.map(conditions => '(' + conditions.conditions.map(condition => this.compileCondition(condition)).join(conditions.op == undefined ? '' : this.compileOperator(conditions.op)) + ')').join(' && ')}
             {
                 ${conditions.map(conditions =>conditions.conditions.map(condition => condition.sensor.ref?.name + 'LastDebounceTime = millis();').join('')).join(';')}
                 
@@ -101,21 +113,56 @@ class ArduinoMLGenerator {
        
     compileCondition(condition: Condition): string {
         return condition.sensor.ref != undefined ?
-            `digitalRead(${condition.sensor.ref?.pin}) == ${condition.value} && ${condition.sensor.ref?.name}BounceGuard` : ''
+            `${this.declareDigitalRead(condition.sensor.ref?.pin)}) == ${condition.value} && ${condition.sensor.ref?.name}BounceGuard` : ''
         }
     
 
-    compileOperator(operator: OPERATOR) {
+    compileOperator(operator: OPERATOR): string {
         switch(operator) {
             case 'AND':
                 return ' && '
             case 'OR':
-                return ' || '    
+                return ' || '
         }
     }
-	compileAction(action: Action): string {
-        return `
-        digitalWrite(${action.actuator.ref?.pin},${action.value});`
+
+    compileAction(action: Action): string {
+        if (isActuatorAction(action)) {
+            return this.declareDigitalWrite(action.brick.ref?.pin,action.value);
+        } else if (isScreenAction(action)) {
+            if (isActuator(action.value.ref) || isSensor(action.value.ref)) {
+                let readValue = this.declareDigitalRead(action.value.ref.pin);
+                switch (action.value.ref.brickType) {
+                    case 'button':
+                    case 'led':
+                    case 'buzzer':
+                        readValue += ` == LOW ? "OFF" : "ON"`
+                        break;
+                    case 'temperature':
+                        readValue += ` * 0.48828125 + " *C"`
+                        break;
+                    default:
+                        break;
+                }
+                return this.declareDigitalWrite(action.brick.ref?.pin, (action.prefix != undefined ? action.prefix : '') + readValue);
+            } else {
+                return this.declareDigitalWrite(action.brick.ref?.pin,(action.prefix != undefined ? action.prefix : '') + action.value);
+            }
+        } else {
+            return ``
+        }
+    }
+
+    declareDigitalRead(pin: number | undefined): string {
+        if (pin != undefined)
+            return `digitalRead(${pin})`
+        return ''
+    }
+
+    declareDigitalWrite(pin: number | undefined, value: string): string {
+        if (pin != undefined)
+            return `digitalWrite(${pin}, ${value})`
+        return '';
     }
 	
 }

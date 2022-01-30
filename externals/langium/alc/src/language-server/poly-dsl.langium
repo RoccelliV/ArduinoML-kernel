@@ -16,13 +16,17 @@ App:
 
 
 Brick:
-	(Actuator | Sensor);
+	(Actuator | Sensor | Screen);
 
 Actuator:
-	'actuator' name=ID ':' pin=INT;
+	'actuator' ('['brickType=STRING']')? name=ID ':' pin=INT;
 
 Sensor:
-	'sensor' name=ID ':' pin=INT;
+	'sensor' ('['brickType=STRING']')? name=ID ':' pin=INT;
+
+
+Screen:
+	'screen' ('['brickType=STRING']')? name=ID ':' pin=INT;
 	
 State:
 	name=ID '{'
@@ -33,7 +37,14 @@ State:
 
 
 Action:
-	actuator=[Actuator|ID] '<=' value=Signal;
+	(ActuatorAction | ScreenAction);
+
+ActuatorAction:
+	brick=[Actuator|ID]'<=' value=Signal;
+
+ScreenAction:
+	brick=[Screen|ID] '<=' (prefix=STRING ':=')? value=[Brick|ID];
+
 
 Transition:
 	conditions+=Conditions (',' conditions+=Conditions)* '=>' next=[State|ID];

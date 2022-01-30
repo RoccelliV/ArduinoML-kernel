@@ -9,8 +9,6 @@ import { AstNode, AstReflection, Reference, isAstNode } from 'langium';
 
 export interface Action extends AstNode {
     readonly $container: State;
-    actuator: Reference<Actuator>
-    value: Signal
 }
 
 export const Action = 'Action';
@@ -34,6 +32,7 @@ export function isApp(item: unknown): item is App {
 
 export interface Brick extends AstNode {
     readonly $container: App;
+    brickType: string
     name: string
     pin: number
 }
@@ -93,6 +92,29 @@ export function isTransition(item: unknown): item is Transition {
     return reflection.isInstance(item, Transition);
 }
 
+export interface ActuatorAction extends Action {
+    brick: Reference<Actuator>
+    value: Signal
+}
+
+export const ActuatorAction = 'ActuatorAction';
+
+export function isActuatorAction(item: unknown): item is ActuatorAction {
+    return reflection.isInstance(item, ActuatorAction);
+}
+
+export interface ScreenAction extends Action {
+    brick: Reference<Screen>
+    prefix: string
+    value: Reference<Brick>
+}
+
+export const ScreenAction = 'ScreenAction';
+
+export function isScreenAction(item: unknown): item is ScreenAction {
+    return reflection.isInstance(item, ScreenAction);
+}
+
 export interface Actuator extends Brick {
 }
 
@@ -100,6 +122,15 @@ export const Actuator = 'Actuator';
 
 export function isActuator(item: unknown): item is Actuator {
     return reflection.isInstance(item, Actuator);
+}
+
+export interface Screen extends Brick {
+}
+
+export const Screen = 'Screen';
+
+export function isScreen(item: unknown): item is Screen {
+    return reflection.isInstance(item, Screen);
 }
 
 export interface Sensor extends Brick {
@@ -115,14 +146,14 @@ export type Signal = 'HIGH' | 'LOW'
 
 export type OPERATOR = 'AND' | 'OR'
 
-export type PolyDslAstType = 'Action' | 'App' | 'Brick' | 'Condition' | 'Conditions' | 'State' | 'Transition' | 'Actuator' | 'Sensor';
+export type PolyDslAstType = 'Action' | 'App' | 'Brick' | 'Condition' | 'Conditions' | 'State' | 'Transition' | 'ActuatorAction' | 'ScreenAction' | 'Actuator' | 'Screen' | 'Sensor';
 
-export type PolyDslAstReference = 'Action:actuator' | 'App:initial' | 'Condition:sensor' | 'Transition:next';
+export type PolyDslAstReference = 'App:initial' | 'Condition:sensor' | 'Transition:next' | 'ActuatorAction:brick' | 'ScreenAction:brick' | 'ScreenAction:value';
 
 export class PolyDslAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['Action', 'App', 'Brick', 'Condition', 'Conditions', 'State', 'Transition', 'Actuator', 'Sensor'];
+        return ['Action', 'App', 'Brick', 'Condition', 'Conditions', 'State', 'Transition', 'ActuatorAction', 'ScreenAction', 'Actuator', 'Screen', 'Sensor'];
     }
 
     isInstance(node: unknown, type: string): boolean {
@@ -134,7 +165,12 @@ export class PolyDslAstReflection implements AstReflection {
             return true;
         }
         switch (subtype) {
+            case ActuatorAction:
+            case ScreenAction: {
+                return this.isSubtype(Action, supertype);
+            }
             case Actuator:
+            case Screen:
             case Sensor: {
                 return this.isSubtype(Brick, supertype);
             }
@@ -146,9 +182,6 @@ export class PolyDslAstReflection implements AstReflection {
 
     getReferenceType(referenceId: PolyDslAstReference): string {
         switch (referenceId) {
-            case 'Action:actuator': {
-                return Actuator;
-            }
             case 'App:initial': {
                 return State;
             }
@@ -157,6 +190,15 @@ export class PolyDslAstReflection implements AstReflection {
             }
             case 'Transition:next': {
                 return State;
+            }
+            case 'ActuatorAction:brick': {
+                return Actuator;
+            }
+            case 'ScreenAction:brick': {
+                return Screen;
+            }
+            case 'ScreenAction:value': {
+                return Brick;
             }
             default: {
                 throw new Error(`${referenceId} is not a valid reference id.`);
