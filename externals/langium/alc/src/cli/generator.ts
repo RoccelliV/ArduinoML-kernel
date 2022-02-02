@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { CompositeGeneratorNode, processGeneratorNode } from 'langium';
-import { Action, Actuator, App, Brick, Condition, Conditions, isActuator, isActuatorAction, isScreen, isScreenAction, isSensor, OPERATOR, Screen, Sensor, State, Transition } from '../language-server/generated/ast';
+import { Action, App, Brick, Condition, Conditions, isActuator, isActuatorAction, isScreen, isScreenAction, isSensor, OPERATOR, Screen, Sensor, State, Transition } from '../language-server/generated/ast';
 import { extractDestinationAndName } from './cli-util';
 import path from 'path';
 
@@ -60,25 +60,22 @@ class ArduinoMLGenerator {
         return ``;
     }
 
-	compileBrick(b: Brick): string {
-    if (isSensor(b)) {
-        return this.compileSensor(b as Sensor); 
-    } else if (isActuator(b)) {
-        return this.compileActuator(b as Actuator);
-    } else if (isScreen(b)) {
-        return this.compileScreen(b as Screen); 
-    }
-    return ``
+	compileBrick(brick: Brick): string {
+        if (!isScreen(brick)) {
+            return this.compilePinMode(brick);
+        } else {
+            return this.compileScreen(brick as Screen);
+        }
 }
 
-	compileActuator(actuator: Actuator): string {
-        return `
-        pinMode(${actuator.pin}, OUTPUT); // ${actuator.name} [Actuator]`
-    }
 
+    compilePinMode(brick: Brick): string {
+        return `
+        pinMode(${brick.no}, OUTPUT); // ${brick.name} [${brick.deviceType}]`
+    }
     declareScreen(screen: Screen): string {
         return `
-        LiquidCrystal ${screen.name}(${this.resolveBus(screen.bus)}); // ${screen.name} [Screen]`
+        LiquidCrystal ${screen.name}(${this.resolveBus(screen.no)}); // ${screen.name} [${screen.deviceType}]`
     }
 	
     compileScreen(screen: Screen): string {
@@ -98,10 +95,6 @@ class ArduinoMLGenerator {
         } else {
             return ``;
         }
-    }
-	compileSensor(sensor: Sensor): string {
-        return `
-        pinMode(${sensor.pin}, INPUT);  // ${sensor.name} [Sensor]` 
     }
 
 	compileState(state: State): string {
@@ -144,7 +137,7 @@ class ArduinoMLGenerator {
        
     compileCondition(condition: Condition): string {
         return condition.sensor.ref != undefined ?
-            `${this.declareDigitalRead(condition.sensor.ref?.pin)} == ${condition.value} && ${condition.sensor.ref?.name}BounceGuard` : ''
+            `${this.declareDigitalRead(condition.sensor.ref?.no)} == ${condition.value} && ${condition.sensor.ref?.name}BounceGuard` : ''
         }
     
 
@@ -159,17 +152,17 @@ class ArduinoMLGenerator {
 
     compileAction(action: Action): string {
         if (isActuatorAction(action)) {
-            return this.declareDigitalWrite(action.brick.ref?.pin,action.value);
+            return this.declareDigitalWrite(action.brick.ref?.no,action.value);
         } else if (isScreenAction(action)) {
             if (isActuator(action.value.ref) || isSensor(action.value.ref)) {
-                let readValue = this.declareDigitalRead(action.value.ref.pin);
-                switch (action.value.ref.brickType) {
-                    case 'button':
-                    case 'led':
-                    case 'buzzer':
+                let readValue = this.declareDigitalRead(action.value.ref.no);
+                switch (action.value.ref.deviceType.deviceType) {
+                    case 'Button':
+                    case 'Led':
+                    case 'Buzzer':
                         readValue += ` == LOW ? "OFF" : "ON"`
                         break;
-                    case 'temperature':
+                    case 'Thermometer':
                         readValue += ` * 0.48828125 + " *C"`
                         break;
                     default:
