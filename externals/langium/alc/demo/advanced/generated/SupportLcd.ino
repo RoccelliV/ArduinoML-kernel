@@ -19,7 +19,7 @@ void setup()
 {
 
     pinMode(8, OUTPUT); // button [[object Object]]
-    pinMode(2, OUTPUT); // led [[object Object]]
+    pinMode(9, OUTPUT); // led [[object Object]]
     lcd.begin(16, 2);
 }
 
@@ -29,8 +29,8 @@ void loop()
     {
 
     case off:
-        digitalWrite(2, LOW);
-        lcd.print(digitalRead(2) == LOW ? "OFF" : "ON");
+        digitalWrite(9, LOW);
+        lcd.print(digitalRead(9) == LOW ? "OFF" : "ON");
 
         buttonBounceGuard = millis() - buttonLastDebounceTime > debounce;
         if (
@@ -43,8 +43,8 @@ void loop()
         break;
 
     case on:
-        digitalWrite(2, HIGH);
-        lcd.print(digitalRead(2) == LOW ? "OFF" : "ON");
+        digitalWrite(9, HIGH);
+        lcd.print(digitalRead(9) == LOW ? "OFF" : "ON");
 
         buttonBounceGuard = millis() - buttonLastDebounceTime > debounce;
         if (
