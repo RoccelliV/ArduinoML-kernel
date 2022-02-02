@@ -379,7 +379,7 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           },
           {
             "$type": "Assignment",
-            "feature": "pin",
+            "feature": "bus",
             "operator": "=",
             "terminal": {
               "$type": "RuleCall",

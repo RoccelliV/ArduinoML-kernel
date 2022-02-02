@@ -34,7 +34,6 @@ export interface Brick extends AstNode {
     readonly $container: App;
     brickType: string
     name: string
-    pin: number
 }
 
 export const Brick = 'Brick';
@@ -116,6 +115,7 @@ export function isScreenAction(item: unknown): item is ScreenAction {
 }
 
 export interface Actuator extends Brick {
+    pin: number
 }
 
 export const Actuator = 'Actuator';
@@ -125,6 +125,7 @@ export function isActuator(item: unknown): item is Actuator {
 }
 
 export interface Screen extends Brick {
+    bus: number
 }
 
 export const Screen = 'Screen';
@@ -134,6 +135,7 @@ export function isScreen(item: unknown): item is Screen {
 }
 
 export interface Sensor extends Brick {
+    pin: number
 }
 
 export const Sensor = 'Sensor';

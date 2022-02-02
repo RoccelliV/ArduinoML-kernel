@@ -21,6 +21,7 @@ class ArduinoMLGenerator {
 		
 	compile(app: App): string { 
         return `
+        ${this.declareDependencies(app)}
 		//Wiring code generated from an ArduinoML model
 		// Application name: ${app.name}
 		long debounce = 200;
@@ -36,12 +37,27 @@ class ArduinoMLGenerator {
 			switch(currentState){
                 ${app.states.map(state => this.compileState(state)).join('')}
 			}
+            delay(50);
+            ${app.bricks.filter(b => isScreen(b)).map(screen => this.clearLcd(screen as Screen))}
 		}
         `
     }
 
+    declareDependencies(app: App): string {
+        return app.bricks.find(b => isScreen(b)) != undefined ? `#include <LiquidCrystal.h>` : ``;
+    }
+    clearLcd(screen: Screen): string {
+        return `${screen.name}.clear();`
+    }
+
 	declareBrick(b: Brick): string { 
-        return isSensor(b) ? this.declareSensor(b as Sensor) : ''
+        if (isSensor(b)) {
+            return this.declareSensor(b as Sensor);
+        } 
+        if (isScreen(b)) {
+            return this.declareScreen(b as Screen);
+        }
+        return ``;
     }
 
 	compileBrick(b: Brick): string {
@@ -50,7 +66,7 @@ class ArduinoMLGenerator {
     } else if (isActuator(b)) {
         return this.compileActuator(b as Actuator);
     } else if (isScreen(b)) {
-        return this.compileScreen(b as Screen);
+        return this.compileScreen(b as Screen); 
     }
     return ``
 }
@@ -60,11 +76,15 @@ class ArduinoMLGenerator {
         pinMode(${actuator.pin}, OUTPUT); // ${actuator.name} [Actuator]`
     }
 
-    compileScreen(screen: Screen): string {
+    declareScreen(screen: Screen): string {
         return `
-        pinMode(${screen.pin}, OUTPUT); // ${screen.name} [Screen]`
+        LiquidCrystal ${screen.name}(${this.resolveBus(screen.bus)}); // ${screen.name} [Screen]`
     }
 	
+    compileScreen(screen: Screen): string {
+        return `
+        ${screen.name}.begin(16, 2);`
+    }
 	declareSensor(sensor: Sensor): string {
         return `
 		boolean ${sensor.name}BounceGuard = false;
@@ -72,6 +92,13 @@ class ArduinoMLGenerator {
     `
     }
 
+    resolveBus(no: number): string {
+        if (no == 2) {
+            return `10, 11, 12, 13, 14, 15, 16`
+        } else {
+            return ``;
+        }
+    }
 	compileSensor(sensor: Sensor): string {
         return `
         pinMode(${sensor.pin}, INPUT);  // ${sensor.name} [Sensor]` 
@@ -148,9 +175,9 @@ class ArduinoMLGenerator {
                     default:
                         break;
                 }
-                return this.declareDigitalWrite(action.brick.ref?.pin, (action.prefix != undefined ? action.prefix : '') + readValue);
+                return `${action.brick.ref?.name}.print(${((action.prefix != undefined ? action.prefix : '') + readValue)})`
             } else {
-                return this.declareDigitalWrite(action.brick.ref?.pin,(action.prefix != undefined ? action.prefix : '') + action.value);
+                return `${action.brick.ref?.name}.print(${((action.prefix != undefined ? action.prefix : '') + action.value)})`
             }
         } else {
             return ``

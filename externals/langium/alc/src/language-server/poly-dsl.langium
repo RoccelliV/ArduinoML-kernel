@@ -26,7 +26,7 @@ Sensor:
 
 
 Screen:
-	'screen' ('['brickType=STRING']')? name=ID ':' pin=INT;
+	'screen' ('['brickType=STRING']')? name=ID ':' bus=INT;
 	
 State:
 	name=ID '{'
