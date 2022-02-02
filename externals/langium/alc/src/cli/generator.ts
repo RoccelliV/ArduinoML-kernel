@@ -103,7 +103,11 @@ class ArduinoMLGenerator {
     }
 
     compileConditions(conditions: Conditions[]): string {
-        return `if (${conditions.map(conditions => '(' + conditions.conditions.map(condition => this.compileCondition(condition)).join(conditions.op == undefined ? '' : this.compileOperator(conditions.op)) + ')').join(' && ')}
+        return `if (
+            ${conditions.map(conditions => '(' + conditions.conditions.map(condition => this.compileCondition(condition))
+        .join(conditions.op == undefined ? '' : this.compileOperator(conditions.op)) + ')')
+        .join(' && ')}
+        )
             {
                 ${conditions.map(conditions =>conditions.conditions.map(condition => condition.sensor.ref?.name + 'LastDebounceTime = millis();').join('')).join(';')}
                 
@@ -113,7 +117,7 @@ class ArduinoMLGenerator {
        
     compileCondition(condition: Condition): string {
         return condition.sensor.ref != undefined ?
-            `${this.declareDigitalRead(condition.sensor.ref?.pin)}) == ${condition.value} && ${condition.sensor.ref?.name}BounceGuard` : ''
+            `${this.declareDigitalRead(condition.sensor.ref?.pin)} == ${condition.value} && ${condition.sensor.ref?.name}BounceGuard` : ''
         }
     
 

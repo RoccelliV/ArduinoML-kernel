@@ -26,7 +26,9 @@
 					    digitalWrite(11, LOW);
                         
         button1BounceGuard = millis() - button1LastDebounceTime > debounce;button2BounceGuard = millis() - button2LastDebounceTime > debounce;
-       if ((digitalRead(10)) == HIGH && button1BounceGuard && digitalRead(9)) == HIGH && button2BounceGuard)
+       if (
+            (digitalRead(10) == HIGH && button1BounceGuard && digitalRead(9) == HIGH && button2BounceGuard)
+        )
             {
                 button1LastDebounceTime = millis();button2LastDebounceTime = millis();
                 
@@ -39,7 +41,9 @@
 					    digitalWrite(11, HIGH);
                         
         button1BounceGuard = millis() - button1LastDebounceTime > debounce;button2BounceGuard = millis() - button2LastDebounceTime > debounce;
-       if ((digitalRead(10)) == LOW && button1BounceGuard && digitalRead(9)) == LOW && button2BounceGuard)
+       if (
+            (digitalRead(10) == LOW && button1BounceGuard && digitalRead(9) == LOW && button2BounceGuard)
+        )
             {
                 button1LastDebounceTime = millis();button2LastDebounceTime = millis();
                 
