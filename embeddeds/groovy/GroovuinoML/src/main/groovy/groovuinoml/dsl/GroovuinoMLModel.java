@@ -15,6 +15,8 @@ import io.github.mosser.arduinoml.kernel.structural.Sensor;
 public class GroovuinoMLModel {
 	private List<Brick> bricks;
 	private List<State> states;
+	private HashMap<String, List<Integer>> typedPins = new HashMap<String, List<Integer>>();
+
 	private State initialState;
 	private Binding binding;
 
@@ -24,6 +26,8 @@ public class GroovuinoMLModel {
 		this.bricks = new ArrayList<Brick>();
 		this.states = new ArrayList<State>();
 		this.binding = binding;
+		this.typedPins.put("sensor", new ArrayList<Integer>());
+		this.typedPins.put("actuator", new ArrayList<Integer>());
 	}
 	
 	public void createSensor(String name, Integer pinNumber) {
@@ -100,7 +104,11 @@ public class GroovuinoMLModel {
 	public void setInitialState(State state) {
 		this.initialState = state;
 	}
-	
+
+	public HashMap<String, List<Integer>> getTypedPins() {
+		return typedPins;
+	}
+
 	@SuppressWarnings("rawtypes")
 	public Object generateCode(String appName) {
 		App app = new App();

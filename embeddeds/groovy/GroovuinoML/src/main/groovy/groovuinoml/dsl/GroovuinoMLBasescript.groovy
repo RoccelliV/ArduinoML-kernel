@@ -9,17 +9,33 @@ import io.github.mosser.arduinoml.kernel.structural.Sensor
 import io.github.mosser.arduinoml.kernel.structural.SIGNAL
 
 abstract class GroovuinoMLBasescript extends Script {
+
+	def checkPinsUtilization(String typePin, int n){
+		def model = ((GroovuinoMLBinding)this.getBinding()).getGroovuinoMLModel()
+
+		if(model.getTypedPins().get(typePin).contains(n)){
+			throw new IllegalArgumentException("Pins of type [" + typePin + "] - number : "+ n + " already use");
+		}else{
+			model.getTypedPins().get(typePin).push(n as Integer);
+		}
+	}
+
 	// sensor "name" pin n
 	def sensor(String name) {
-		[pin: { n -> ((GroovuinoMLBinding)this.getBinding()).getGroovuinoMLModel().createSensor(name, n) },
+		[pin: { n ->
+			checkPinsUtilization("sensor", n as Integer)
+			((GroovuinoMLBinding)this.getBinding()).getGroovuinoMLModel().createSensor(name, n as Integer) },
 		onPin: { n -> ((GroovuinoMLBinding)this.getBinding()).getGroovuinoMLModel().createSensor(name, n)}]
 	}
 	
 	// actuator "name" pin n
 	def actuator(String name) {
-		[pin: { n -> ((GroovuinoMLBinding)this.getBinding()).getGroovuinoMLModel().createActuator(name, n) }]
+		[pin: { n ->
+			checkPinsUtilization("actuator", n as Integer)
+			((GroovuinoMLBinding)this.getBinding()).getGroovuinoMLModel().createActuator(name, n)
+		}]
 	}
-	
+
 	// state "name" means actuator becomes signal [and actuator becomes signal]*n
 	def state(String name) {
 		List<Action> actions = new ArrayList<Action>()
