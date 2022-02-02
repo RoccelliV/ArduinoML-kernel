@@ -1,8 +1,8 @@
 app SupportLcd initial state off {
 	bricks
 		Button button : PIN 8
-		Led led: PIN 9
-		Lcd lcd : BUS 4	
+		Led led: PIN 2
+		Lcd lcd : BUS 2
 	states
 		off {
 			led <= LOW

@@ -1,4 +1,5 @@
 
+
 //Wiring code generated from an ArduinoML model
 // Application name: VerySimpleAlarm
 long debounce = 200;
@@ -15,9 +16,9 @@ long buttonLastDebounceTime = 0;
 void setup()
 {
 
-    pinMode(12, OUTPUT); // led [Actuator]
-    pinMode(11, OUTPUT); // buzzer [Actuator]
-    pinMode(8, INPUT);   // button [Sensor]
+    pinMode(12, OUTPUT); // led [[object Object]]
+    pinMode(11, OUTPUT); // buzzer [[object Object]]
+    pinMode(8, OUTPUT);  // button [[object Object]]
 }
 
 void loop()
@@ -30,7 +31,8 @@ void loop()
         digitalWrite(11, LOW);
 
         buttonBounceGuard = millis() - buttonLastDebounceTime > debounce;
-        if ((digitalRead(8)) == HIGH && buttonBounceGuard)
+        if (
+            (digitalRead(8) == HIGH && buttonBounceGuard))
         {
             buttonLastDebounceTime = millis();
 
@@ -43,7 +45,8 @@ void loop()
         digitalWrite(11, HIGH);
 
         buttonBounceGuard = millis() - buttonLastDebounceTime > debounce;
-        if ((digitalRead(8)) == HIGH && buttonBounceGuard)
+        if (
+            (digitalRead(8) == HIGH && buttonBounceGuard))
         {
             buttonLastDebounceTime = millis();
 
@@ -51,4 +54,5 @@ void loop()
         }
         break;
     }
+    delay(50);
 }

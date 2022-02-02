@@ -1,8 +1,8 @@
 app VerySimpleAlarm initial state off {
 	bricks
-		actuator led : 12
-		actuator buzzer: 11
-		sensor button : 8
+		Led led : PIN 12
+		Buzzer buzzer: PIN 11
+		Button button : PIN 8
 	
 	states
 		off {

@@ -1,8 +1,8 @@
 app DualCheckAlarm initial state off {
 	bricks
-		actuator buzzer: 11
-		sensor button1 : 10
-		sensor button2 : 9
+		Buzzer buzzer: PIN 11
+		Button button1 : PIN 10
+		Button button2 : PIN 9
 	
 	states
 		off {

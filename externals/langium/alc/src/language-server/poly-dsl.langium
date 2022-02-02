@@ -16,16 +16,16 @@ App:
 
 
 Brick:
-	(Actuator | Sensor | Screen);
+	Actuator | Sensor | Screen;
 
 Actuator:
-	deviceType=ActuatorType name=ID ':' 'PIN' no=INT;
+	deviceType=ActuatorType name=ID ':' connection=Pin;
 
 Sensor:
-	deviceType=SensorType name=ID ':' 'PIN' no=INT;
+	deviceType=SensorType name=ID ':' connection=Pin;
 
 Screen:
-	deviceType=ScreenType name=ID ':' 'BUS' no=INT;
+	deviceType=ScreenType name=ID ':' connection=Bus;
 
 
 State:
@@ -37,7 +37,7 @@ State:
 
 
 Action:
-	(ActuatorAction | ScreenAction);
+	ActuatorAction | ScreenAction;
 
 ActuatorAction:
 	brick=[Actuator|ID]'<=' value=Signal;
@@ -60,6 +60,12 @@ OPERATOR returns string: 'AND' | 'OR';
 SensorType returns DeviceType: deviceType=('Button' | 'Thermometer');
 ScreenType returns DeviceType: deviceType=('Lcd');
 ActuatorType returns DeviceType: deviceType=('Led' | 'Buzzer');
+
+Bus returns Connection:
+	 typeConnection='BUS' no=INT;
+Pin returns Connection:
+	 typeConnection='PIN' no=INT;
+
 terminal WS: /\s+/;
 terminal ID: /[_a-zA-Z][\w_]*/;
 terminal INT returns number: /[0-9]+/;

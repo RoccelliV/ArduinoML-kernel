@@ -32,9 +32,9 @@ export function isApp(item: unknown): item is App {
 
 export interface Brick extends AstNode {
     readonly $container: App;
+    connection: Connection
     deviceType: DeviceType
     name: string
-    no: number
 }
 
 export const Brick = 'Brick';
@@ -65,6 +65,18 @@ export const Conditions = 'Conditions';
 
 export function isConditions(item: unknown): item is Conditions {
     return reflection.isInstance(item, Conditions);
+}
+
+export interface Connection extends AstNode {
+    readonly $container: Brick;
+    no: number
+    typeConnection: 'BUS' | 'PIN'
+}
+
+export const Connection = 'Connection';
+
+export function isConnection(item: unknown): item is Connection {
+    return reflection.isInstance(item, Connection);
 }
 
 export interface DeviceType extends AstNode {
@@ -157,14 +169,14 @@ export type Signal = 'HIGH' | 'LOW'
 
 export type OPERATOR = 'AND' | 'OR'
 
-export type PolyDslAstType = 'Action' | 'App' | 'Brick' | 'Condition' | 'Conditions' | 'DeviceType' | 'State' | 'Transition' | 'ActuatorAction' | 'ScreenAction' | 'Actuator' | 'Screen' | 'Sensor';
+export type PolyDslAstType = 'Action' | 'App' | 'Brick' | 'Condition' | 'Conditions' | 'Connection' | 'DeviceType' | 'State' | 'Transition' | 'ActuatorAction' | 'ScreenAction' | 'Actuator' | 'Screen' | 'Sensor';
 
 export type PolyDslAstReference = 'App:initial' | 'Condition:sensor' | 'Transition:next' | 'ActuatorAction:brick' | 'ScreenAction:brick' | 'ScreenAction:value';
 
 export class PolyDslAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['Action', 'App', 'Brick', 'Condition', 'Conditions', 'DeviceType', 'State', 'Transition', 'ActuatorAction', 'ScreenAction', 'Actuator', 'Screen', 'Sensor'];
+        return ['Action', 'App', 'Brick', 'Condition', 'Conditions', 'Connection', 'DeviceType', 'State', 'Transition', 'ActuatorAction', 'ScreenAction', 'Actuator', 'Screen', 'Sensor'];
     }
 
     isInstance(node: unknown, type: string): boolean {

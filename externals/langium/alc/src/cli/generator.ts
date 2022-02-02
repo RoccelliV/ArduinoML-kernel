@@ -71,11 +71,11 @@ class ArduinoMLGenerator {
 
     compilePinMode(brick: Brick): string {
         return `
-        pinMode(${brick.no}, OUTPUT); // ${brick.name} [${brick.deviceType}]`
+        pinMode(${brick.connection.no}, OUTPUT); // ${brick.name} [${brick.deviceType}]`
     }
     declareScreen(screen: Screen): string {
         return `
-        LiquidCrystal ${screen.name}(${this.resolveBus(screen.no)}); // ${screen.name} [${screen.deviceType}]`
+        LiquidCrystal ${screen.name}(${this.resolveBus(screen.connection.no)}); // ${screen.name} [${screen.deviceType}]`
     }
 	
     compileScreen(screen: Screen): string {
@@ -137,7 +137,7 @@ class ArduinoMLGenerator {
        
     compileCondition(condition: Condition): string {
         return condition.sensor.ref != undefined ?
-            `${this.declareDigitalRead(condition.sensor.ref?.no)} == ${condition.value} && ${condition.sensor.ref?.name}BounceGuard` : ''
+            `${this.declareDigitalRead(condition.sensor.ref?.connection.no)} == ${condition.value} && ${condition.sensor.ref?.name}BounceGuard` : ''
         }
     
 
@@ -152,10 +152,10 @@ class ArduinoMLGenerator {
 
     compileAction(action: Action): string {
         if (isActuatorAction(action)) {
-            return this.declareDigitalWrite(action.brick.ref?.no,action.value);
+            return this.declareDigitalWrite(action.brick.ref?.connection.no,action.value);
         } else if (isScreenAction(action)) {
             if (isActuator(action.value.ref) || isSensor(action.value.ref)) {
-                let readValue = this.declareDigitalRead(action.value.ref.no);
+                let readValue = this.declareDigitalRead(action.value.ref.connection.no);
                 switch (action.value.ref.deviceType.deviceType) {
                     case 'Button':
                     case 'Led':

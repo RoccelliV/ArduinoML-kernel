@@ -217,18 +217,14 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             "value": ":"
           },
           {
-            "$type": "Keyword",
-            "value": "PIN"
-          },
-          {
             "$type": "Assignment",
-            "feature": "no",
+            "feature": "connection",
             "operator": "=",
             "terminal": {
               "$type": "RuleCall",
               "arguments": [],
               "rule": {
-                "$refText": "INT"
+                "$refText": "Pin"
               }
             }
           }
@@ -273,18 +269,14 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             "value": ":"
           },
           {
-            "$type": "Keyword",
-            "value": "PIN"
-          },
-          {
             "$type": "Assignment",
-            "feature": "no",
+            "feature": "connection",
             "operator": "=",
             "terminal": {
               "$type": "RuleCall",
               "arguments": [],
               "rule": {
-                "$refText": "INT"
+                "$refText": "Pin"
               }
             }
           }
@@ -329,18 +321,14 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             "value": ":"
           },
           {
-            "$type": "Keyword",
-            "value": "BUS"
-          },
-          {
             "$type": "Assignment",
-            "feature": "no",
+            "feature": "connection",
             "operator": "=",
             "terminal": {
               "$type": "RuleCall",
               "arguments": [],
               "rule": {
-                "$refText": "INT"
+                "$refText": "Bus"
               }
             }
           }
@@ -849,6 +837,74 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           ]
         },
         "elements": []
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "Bus",
+      "hiddenTokens": [],
+      "type": "Connection",
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "typeConnection",
+            "operator": "=",
+            "terminal": {
+              "$type": "Keyword",
+              "value": "BUS"
+            },
+            "elements": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "no",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "INT"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "Pin",
+      "hiddenTokens": [],
+      "type": "Connection",
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "typeConnection",
+            "operator": "=",
+            "terminal": {
+              "$type": "Keyword",
+              "value": "PIN"
+            },
+            "elements": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "no",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "INT"
+              }
+            }
+          }
+        ]
       }
     },
     {
