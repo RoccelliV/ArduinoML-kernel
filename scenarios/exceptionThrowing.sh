@@ -10,4 +10,4 @@ cd ../..
 cd embeddeds/groovy/GroovuinoML
 mvn clean install
 mvn clean compile assembly:single
-java -jar target/dsl-groovy-1.0-jar-with-dependencies.jar scripts/StateAlarmBased.groovy
+java -jar target/dsl-groovy-1.0-jar-with-dependencies.jar scripts/ExceptionThrowing.groovy
