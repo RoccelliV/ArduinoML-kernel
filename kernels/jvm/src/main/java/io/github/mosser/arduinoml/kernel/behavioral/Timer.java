@@ -1,20 +1,10 @@
 package io.github.mosser.arduinoml.kernel.behavioral;
 
 public class Timer {
-    private boolean isActive = false;
     private int time;
 
-    public Timer(boolean isActive, int time) {
-        this.isActive = isActive;
+    public Timer(int time) {
         this.time = time;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        isActive = active;
     }
 
     public int getTime() {
@@ -28,8 +18,7 @@ public class Timer {
     @Override
     public String toString() {
         return "Timer{" +
-                "isActive=" + isActive +
-                ", time=" + time +
+                "time=" + time +
                 '}';
     }
 }

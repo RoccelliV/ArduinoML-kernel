@@ -36,9 +36,8 @@ public class ToWiring extends Visitor<StringBuffer> {
 		}
 		w("};\n");
 		for (State state: app.getStates()){
-			System.out.println(state);
 			if (state.getTimer() != null){
-				w(String.format("boolean %sStateTimer=%b;\n", state.getName(), state.getTimer().isActive()));
+				w(String.format("boolean %sStateTimer=%b;\n", state.getName(), true));
 			}
 		}
 		if (app.getInitial() != null) {
