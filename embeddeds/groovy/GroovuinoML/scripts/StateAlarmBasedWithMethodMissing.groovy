@@ -9,6 +9,8 @@ state "on" means "led" becomes "high"
 state "off" means "led" becomes "low"
     to "on" when "button" becomes "high"
 
+tor "eo"
+
 initial off
 
 export "StateAlarmBased!"
