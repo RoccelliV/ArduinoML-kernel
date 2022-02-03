@@ -15,7 +15,24 @@ ex : ./runner.sh VerySimpleAlarm
 you'll see arduino code (.ino) printed in console
 
 ### Execution scenarios external DSL
->todo
+* Generate the new grammar
+```sh
+npm run langium:generate
+```
+* Build DSL
+```sh
+npm run build
+```
+
+To launch the extension (after generating the grammar && building dsl) :
+* hit F5 button (the langium project must be opened in VS code at its root and not the entire ArduinoML folder)
+
+* This opens a new VScode window allowing to edit .alc with highlighting, auto-completion, static checks...
+
+* To transform an .alc file into an .ino :
+```sh
+bin/cli generate filename.alc
+```
 
 For more details please consult **[report](http://github.com)** 
 
