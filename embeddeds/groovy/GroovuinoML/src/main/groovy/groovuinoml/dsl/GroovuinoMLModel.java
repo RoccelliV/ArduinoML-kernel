@@ -32,7 +32,6 @@ public class GroovuinoMLModel {
 		sensor.setPin(pinNumber);
 		this.bricks.add(sensor);
 		this.binding.setVariable(name, sensor);
-//		System.out.println("> sensor " + name + " on pin " + pinNumber);
 	}
 	
 	public void createActuator(String name, Integer pinNumber) {
@@ -43,12 +42,13 @@ public class GroovuinoMLModel {
 		this.binding.setVariable(name, actuator);
 	}
 	
-	public void createState(String name, List<Action> actions) {
+	public State createState(String name, List<Action> actions) {
 		State state = new State();
 		state.setName(name);
 		state.setActions(actions);
 		this.states.add(state);
 		this.binding.setVariable(name, state);
+		return state;
 	}
 
 	public void createExceptionState(String name, Actuator actuator, int blinkingTimes){
@@ -70,7 +70,6 @@ public class GroovuinoMLModel {
 	public void addTimerToState(String name, Timer timer){
 		Optional<State> state = this.states.stream().filter(s->s.getName().equals(name)).findFirst();
 		state.ifPresent(value -> value.setTimer(timer));
-		state.ifPresent(v -> System.out.println(v));
 	}
 	
 
@@ -83,6 +82,15 @@ public class GroovuinoMLModel {
 
 	public void updateState(State currentStateRunning) {
 		this.currentStateRunning = currentStateRunning;
+	}
+
+	public void addActionByStateName(String stateName, Action action) {
+		Optional<State> state = this.states.stream().filter(s -> s.getName().equals(stateName)).findFirst();
+		state.ifPresent(value -> value.addAction(action));
+	}
+
+	public Optional<State> getStateByName(String name){
+		return this.states.stream().filter(state -> state.getName().equals(name)).findFirst();
 	}
 
 	public State getCurrentStateRunning() {
