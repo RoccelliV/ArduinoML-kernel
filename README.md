@@ -34,7 +34,7 @@ To launch the extension (after generating the grammar && building dsl) :
 bin/cli generate filename.alc
 ```
 
-For more details please consult **[report](http://github.com)** 
+For more details please consult **[report](https://github.com/RoccelliV/ArduinoML-kernel/blob/master/Rapport-dsl-1.pdf)** 
 
 ### Team
 - [Rachid EL ADLANI](https://github.com/rachid-eladlani)
