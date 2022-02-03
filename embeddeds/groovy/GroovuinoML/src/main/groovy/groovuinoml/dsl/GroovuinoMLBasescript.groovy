@@ -14,15 +14,33 @@ abstract class GroovuinoMLBasescript extends Script {
 
 	State curState;
 
+	def checkPinsUtilization(String typePin, int n){
+		def model = ((GroovuinoMLBinding)this.getBinding()).getGroovuinoMLModel()
+
+		if(model.getTypedPins().get(typePin).contains(n)){
+			String RED = "\033[0;31m";
+			String RESET = "\033[0m";
+			println( RED + "Pins of type [" + typePin + "] - number : " + n + " already use" + RESET)
+			System.exit(0); //pas de throw exception on ne veut pas embêter le user avec une grosse stack trace
+		}else{
+			model.getTypedPins().get(typePin).push(n as Integer);
+		}
+	}
+
 	// sensor "name" pin n
 	def sensor(String name) {
-		[pin: { n -> ((GroovuinoMLBinding)this.getBinding()).getGroovuinoMLModel().createSensor(name, n) },
-		 onPin: { n -> ((GroovuinoMLBinding)this.getBinding()).getGroovuinoMLModel().createSensor(name, n)}]
+		 [pin: { n ->
+			 checkPinsUtilization("sensor", n as Integer)
+			 ((GroovuinoMLBinding)this.getBinding()).getGroovuinoMLModel().createSensor(name, n as Integer) },
+		  onPin: { n -> ((GroovuinoMLBinding)this.getBinding()).getGroovuinoMLModel().createSensor(name, n)}]
 	}
 
 	// actuator "name" pin n
 	def actuator(String name) {
-		[pin: { n -> ((GroovuinoMLBinding)this.getBinding()).getGroovuinoMLModel().createActuator(name, n) }]
+		[pin: { n ->
+			checkPinsUtilization("actuator", n as Integer)
+			((GroovuinoMLBinding)this.getBinding()).getGroovuinoMLModel().createActuator(name, n)
+		}]
 	}
 
 	// defines states "name" [and "name"]*n
