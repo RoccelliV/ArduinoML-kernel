@@ -1,4 +1,5 @@
 
+#include <LiquidCrystal.h>
 //Wiring code generated from an ArduinoML model
 // Application name: SupportLcd
 long debounce = 200;
@@ -12,12 +13,14 @@ STATE currentState = off;
 boolean buttonBounceGuard = false;
 long buttonLastDebounceTime = 0;
 
+LiquidCrystal lcd(10, 11, 12, 13, 14, 15, 16); // lcd [[object Object]]
+
 void setup()
 {
 
-    pinMode(10, INPUT); // button [Sensor]
-    pinMode(9, OUTPUT); // led [Actuator]
-    pinMode(8, OUTPUT); // lcd [Screen]
+    pinMode(8, OUTPUT); // button [[object Object]]
+    pinMode(9, OUTPUT); // led [[object Object]]
+    lcd.begin(16, 2);
 }
 
 void loop()
@@ -27,10 +30,11 @@ void loop()
 
     case off:
         digitalWrite(9, LOW);
-        digitalWrite(8, digitalRead(9) == LOW ? "OFF" : "ON");
+        lcd.print(digitalRead(9) == LOW ? "OFF" : "ON");
 
         buttonBounceGuard = millis() - buttonLastDebounceTime > debounce;
-        if ((digitalRead(10)) == HIGH && buttonBounceGuard)
+        if (
+            (digitalRead(8) == HIGH && buttonBounceGuard))
         {
             buttonLastDebounceTime = millis();
 
@@ -40,10 +44,11 @@ void loop()
 
     case on:
         digitalWrite(9, HIGH);
-        digitalWrite(8, digitalRead(9) == LOW ? "OFF" : "ON");
+        lcd.print(digitalRead(9) == LOW ? "OFF" : "ON");
 
         buttonBounceGuard = millis() - buttonLastDebounceTime > debounce;
-        if ((digitalRead(10)) == HIGH && buttonBounceGuard)
+        if (
+            (digitalRead(8) == HIGH && buttonBounceGuard))
         {
             buttonLastDebounceTime = millis();
 
@@ -51,4 +56,6 @@ void loop()
         }
         break;
     }
+    delay(50);
+    lcd.clear();
 }

@@ -188,36 +188,17 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
         "$type": "Group",
         "elements": [
           {
-            "$type": "Keyword",
-            "value": "actuator",
-            "elements": []
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Keyword",
-                "value": "[",
-                "elements": []
-              },
-              {
-                "$type": "Assignment",
-                "feature": "brickType",
-                "operator": "=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "arguments": [],
-                  "rule": {
-                    "$refText": "STRING"
-                  }
-                }
-              },
-              {
-                "$type": "Keyword",
-                "value": "]"
+            "$type": "Assignment",
+            "feature": "deviceType",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "ActuatorType"
               }
-            ],
-            "cardinality": "?"
+            },
+            "elements": []
           },
           {
             "$type": "Assignment",
@@ -237,13 +218,13 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           },
           {
             "$type": "Assignment",
-            "feature": "pin",
+            "feature": "connection",
             "operator": "=",
             "terminal": {
               "$type": "RuleCall",
               "arguments": [],
               "rule": {
-                "$refText": "INT"
+                "$refText": "Pin"
               }
             }
           }
@@ -259,36 +240,17 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
         "$type": "Group",
         "elements": [
           {
-            "$type": "Keyword",
-            "value": "sensor",
-            "elements": []
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Keyword",
-                "value": "[",
-                "elements": []
-              },
-              {
-                "$type": "Assignment",
-                "feature": "brickType",
-                "operator": "=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "arguments": [],
-                  "rule": {
-                    "$refText": "STRING"
-                  }
-                }
-              },
-              {
-                "$type": "Keyword",
-                "value": "]"
+            "$type": "Assignment",
+            "feature": "deviceType",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "SensorType"
               }
-            ],
-            "cardinality": "?"
+            },
+            "elements": []
           },
           {
             "$type": "Assignment",
@@ -308,13 +270,13 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           },
           {
             "$type": "Assignment",
-            "feature": "pin",
+            "feature": "connection",
             "operator": "=",
             "terminal": {
               "$type": "RuleCall",
               "arguments": [],
               "rule": {
-                "$refText": "INT"
+                "$refText": "Pin"
               }
             }
           }
@@ -330,36 +292,17 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
         "$type": "Group",
         "elements": [
           {
-            "$type": "Keyword",
-            "value": "screen",
-            "elements": []
-          },
-          {
-            "$type": "Group",
-            "elements": [
-              {
-                "$type": "Keyword",
-                "value": "[",
-                "elements": []
-              },
-              {
-                "$type": "Assignment",
-                "feature": "brickType",
-                "operator": "=",
-                "terminal": {
-                  "$type": "RuleCall",
-                  "arguments": [],
-                  "rule": {
-                    "$refText": "STRING"
-                  }
-                }
-              },
-              {
-                "$type": "Keyword",
-                "value": "]"
+            "$type": "Assignment",
+            "feature": "deviceType",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "ScreenType"
               }
-            ],
-            "cardinality": "?"
+            },
+            "elements": []
           },
           {
             "$type": "Assignment",
@@ -379,13 +322,13 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
           },
           {
             "$type": "Assignment",
-            "feature": "pin",
+            "feature": "connection",
             "operator": "=",
             "terminal": {
               "$type": "RuleCall",
               "arguments": [],
               "rule": {
-                "$refText": "INT"
+                "$refText": "Bus"
               }
             }
           }
@@ -820,6 +763,146 @@ export const grammar = (): Grammar => loaded || (loaded = loadGrammar(`{
             "$type": "Keyword",
             "value": "OR",
             "elements": []
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "SensorType",
+      "hiddenTokens": [],
+      "type": "DeviceType",
+      "alternatives": {
+        "$type": "Assignment",
+        "feature": "deviceType",
+        "operator": "=",
+        "terminal": {
+          "$type": "Alternatives",
+          "elements": [
+            {
+              "$type": "Keyword",
+              "value": "Button",
+              "elements": []
+            },
+            {
+              "$type": "Keyword",
+              "value": "Thermometer"
+            }
+          ]
+        },
+        "elements": []
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "ScreenType",
+      "hiddenTokens": [],
+      "type": "DeviceType",
+      "alternatives": {
+        "$type": "Assignment",
+        "feature": "deviceType",
+        "operator": "=",
+        "terminal": {
+          "$type": "Keyword",
+          "value": "Lcd",
+          "elements": []
+        },
+        "elements": []
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "ActuatorType",
+      "hiddenTokens": [],
+      "type": "DeviceType",
+      "alternatives": {
+        "$type": "Assignment",
+        "feature": "deviceType",
+        "operator": "=",
+        "terminal": {
+          "$type": "Alternatives",
+          "elements": [
+            {
+              "$type": "Keyword",
+              "value": "Led",
+              "elements": []
+            },
+            {
+              "$type": "Keyword",
+              "value": "Buzzer"
+            }
+          ]
+        },
+        "elements": []
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "Bus",
+      "hiddenTokens": [],
+      "type": "Connection",
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "typeConnection",
+            "operator": "=",
+            "terminal": {
+              "$type": "Keyword",
+              "value": "BUS"
+            },
+            "elements": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "no",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "INT"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$type": "ParserRule",
+      "parameters": [],
+      "name": "Pin",
+      "hiddenTokens": [],
+      "type": "Connection",
+      "alternatives": {
+        "$type": "Group",
+        "elements": [
+          {
+            "$type": "Assignment",
+            "feature": "typeConnection",
+            "operator": "=",
+            "terminal": {
+              "$type": "Keyword",
+              "value": "PIN"
+            },
+            "elements": []
+          },
+          {
+            "$type": "Assignment",
+            "feature": "no",
+            "operator": "=",
+            "terminal": {
+              "$type": "RuleCall",
+              "arguments": [],
+              "rule": {
+                "$refText": "INT"
+              }
+            }
           }
         ]
       }

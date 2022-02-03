@@ -1,8 +1,8 @@
 app MultiStateAlarm initial state off {
 	bricks
-		actuator buzzer: 11
-		sensor button : 10
-		actuator led : 9
+		Buzzer buzzer: PIN 11
+		Button button : PIN 10
+		Led led : PIN 9
 	
 	states
 		off {

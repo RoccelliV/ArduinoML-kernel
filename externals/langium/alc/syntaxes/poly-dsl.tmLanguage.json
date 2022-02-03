@@ -10,11 +10,11 @@
     },
     {
       "name": "keyword.control.poly-dsl",
-      "match": "\\b(actuator|AND|app|bricks|HIGH|initial|is|LOW|OR|screen|sensor|state|states)\\b"
+      "match": "\\b(AND|app|bricks|BUS|Button|Buzzer|HIGH|initial|is|Lcd|Led|LOW|OR|PIN|state|states|Thermometer)\\b"
     },
     {
       "name": "keyword.symbol.poly-dsl",
-      "match": "(\\,|\\:|\\:=|\\[|\\]|\\{|\\}|\\<=|\\=>)"
+      "match": "(\\,|\\:|\\:=|\\{|\\}|\\<=|\\=>)"
     }
   ],
   "repository": {

@@ -32,9 +32,9 @@ export function isApp(item: unknown): item is App {
 
 export interface Brick extends AstNode {
     readonly $container: App;
-    brickType: string
+    connection: Connection
+    deviceType: DeviceType
     name: string
-    pin: number
 }
 
 export const Brick = 'Brick';
@@ -65,6 +65,29 @@ export const Conditions = 'Conditions';
 
 export function isConditions(item: unknown): item is Conditions {
     return reflection.isInstance(item, Conditions);
+}
+
+export interface Connection extends AstNode {
+    readonly $container: Brick;
+    no: number
+    typeConnection: 'BUS' | 'PIN'
+}
+
+export const Connection = 'Connection';
+
+export function isConnection(item: unknown): item is Connection {
+    return reflection.isInstance(item, Connection);
+}
+
+export interface DeviceType extends AstNode {
+    readonly $container: Brick;
+    deviceType: 'Button' | 'Thermometer' | 'Lcd' | 'Led' | 'Buzzer'
+}
+
+export const DeviceType = 'DeviceType';
+
+export function isDeviceType(item: unknown): item is DeviceType {
+    return reflection.isInstance(item, DeviceType);
 }
 
 export interface State extends AstNode {
@@ -146,14 +169,14 @@ export type Signal = 'HIGH' | 'LOW'
 
 export type OPERATOR = 'AND' | 'OR'
 
-export type PolyDslAstType = 'Action' | 'App' | 'Brick' | 'Condition' | 'Conditions' | 'State' | 'Transition' | 'ActuatorAction' | 'ScreenAction' | 'Actuator' | 'Screen' | 'Sensor';
+export type PolyDslAstType = 'Action' | 'App' | 'Brick' | 'Condition' | 'Conditions' | 'Connection' | 'DeviceType' | 'State' | 'Transition' | 'ActuatorAction' | 'ScreenAction' | 'Actuator' | 'Screen' | 'Sensor';
 
 export type PolyDslAstReference = 'App:initial' | 'Condition:sensor' | 'Transition:next' | 'ActuatorAction:brick' | 'ScreenAction:brick' | 'ScreenAction:value';
 
 export class PolyDslAstReflection implements AstReflection {
 
     getAllTypes(): string[] {
-        return ['Action', 'App', 'Brick', 'Condition', 'Conditions', 'State', 'Transition', 'ActuatorAction', 'ScreenAction', 'Actuator', 'Screen', 'Sensor'];
+        return ['Action', 'App', 'Brick', 'Condition', 'Conditions', 'Connection', 'DeviceType', 'State', 'Transition', 'ActuatorAction', 'ScreenAction', 'Actuator', 'Screen', 'Sensor'];
     }
 
     isInstance(node: unknown, type: string): boolean {

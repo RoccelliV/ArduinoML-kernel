@@ -1,4 +1,5 @@
 
+
 //Wiring code generated from an ArduinoML model
 // Application name: MultiStateAlarm
 long debounce = 200;
@@ -16,9 +17,9 @@ long buttonLastDebounceTime = 0;
 void setup()
 {
 
-    pinMode(11, OUTPUT); // buzzer [Actuator]
-    pinMode(10, INPUT);  // button [Sensor]
-    pinMode(9, OUTPUT);  // led [Actuator]
+    pinMode(11, OUTPUT); // buzzer [[object Object]]
+    pinMode(10, OUTPUT); // button [[object Object]]
+    pinMode(9, OUTPUT);  // led [[object Object]]
 }
 
 void loop()
@@ -31,7 +32,8 @@ void loop()
         digitalWrite(9, LOW);
 
         buttonBounceGuard = millis() - buttonLastDebounceTime > debounce;
-        if ((digitalRead(10)) == HIGH && buttonBounceGuard)
+        if (
+            (digitalRead(10) == HIGH && buttonBounceGuard))
         {
             buttonLastDebounceTime = millis();
 
@@ -44,7 +46,8 @@ void loop()
         digitalWrite(9, LOW);
 
         buttonBounceGuard = millis() - buttonLastDebounceTime > debounce;
-        if ((digitalRead(10)) == HIGH && buttonBounceGuard)
+        if (
+            (digitalRead(10) == HIGH && buttonBounceGuard))
         {
             buttonLastDebounceTime = millis();
 
@@ -57,7 +60,8 @@ void loop()
         digitalWrite(9, HIGH);
 
         buttonBounceGuard = millis() - buttonLastDebounceTime > debounce;
-        if ((digitalRead(10)) == HIGH && buttonBounceGuard)
+        if (
+            (digitalRead(10) == HIGH && buttonBounceGuard))
         {
             buttonLastDebounceTime = millis();
 
@@ -65,4 +69,5 @@ void loop()
         }
         break;
     }
+    delay(50);
 }

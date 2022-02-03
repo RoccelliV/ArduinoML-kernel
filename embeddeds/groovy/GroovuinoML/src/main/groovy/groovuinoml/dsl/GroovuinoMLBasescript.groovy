@@ -13,22 +13,44 @@ import io.github.mosser.arduinoml.kernel.structural.SIGNAL
 abstract class GroovuinoMLBasescript extends Script {
 
 	State curState;
+  
+	def checkPinsUtilization(String typePin, int n){
+		def model = ((GroovuinoMLBinding)this.getBinding()).getGroovuinoMLModel()
+
+		if(model.getTypedPins().get(typePin).contains(n)){
+			throw new IllegalArgumentException("Pins of type [" + typePin + "] - number : "+ n + " already use");
+		}else{
+			model.getTypedPins().get(typePin).push(n as Integer);
+		}
+	}
 
 	// sensor "name" pin n
 	def sensor(String name) {
-		[pin: { n -> ((GroovuinoMLBinding)this.getBinding()).getGroovuinoMLModel().createSensor(name, n) },
+		[pin: { n ->
+			checkPinsUtilization("sensor", n as Integer)
+			((GroovuinoMLBinding)this.getBinding()).getGroovuinoMLModel().createSensor(name, n as Integer) },
 		onPin: { n -> ((GroovuinoMLBinding)this.getBinding()).getGroovuinoMLModel().createSensor(name, n)}]
 	}
 	
 	// actuator "name" pin n
 	def actuator(String name) {
-		[pin: { n -> ((GroovuinoMLBinding)this.getBinding()).getGroovuinoMLModel().createActuator(name, n) }]
+		[pin: { n ->
+			checkPinsUtilization("actuator", n as Integer)
+			((GroovuinoMLBinding)this.getBinding()).getGroovuinoMLModel().createActuator(name, n)
+		}]
 	}
 
 	// defines states "name" [and "name"]*n
 	def states(state1){
 		((GroovuinoMLBinding) this.getBinding()).getGroovuinoMLModel().createState(state1, new ArrayList<Action>())
-		def closure
+  }
+    // state "name" means actuator becomes signal [and actuator becomes signal]*n
+	def state(String name) {
+		List<Action> actions = new ArrayList<Action>()
+		((GroovuinoMLBinding) this.getBinding()).getGroovuinoMLModel().createState(name, actions)
+		// recursive closure to allow multiple and statements
+
+    def closure
 		closure = { state ->
 				((GroovuinoMLBinding) this.getBinding()).getGroovuinoMLModel().createState(state, new ArrayList<Action>())
 				[and: closure]
@@ -42,27 +64,6 @@ abstract class GroovuinoMLBasescript extends Script {
 				((GroovuinoMLBinding) this.getBinding()).getGroovuinoMLModel().addTimerToState(state, new Timer(duration.amount*duration.unit.multiplier as int));
 			}]
 		}]
-	}
-
-	// state "name" means actuator becomes signal [and actuator becomes signal]*n
-	def state(String name) {
-		Optional<State> optionalState = ((GroovuinoMLBinding) this.getBinding()).getGroovuinoMLModel().getStateByName(name);
-
-		if (optionalState.isPresent()){
-			curState = optionalState.get();
-			// recursive closure to allow multiple and statements
-			def closure
-			closure = { actuator ->
-				[becomes: { signal ->
-					Action action = new Action()
-					action.setActuator(actuator instanceof String ? (Actuator)((GroovuinoMLBinding)this.getBinding()).getVariable(actuator) : (Actuator)actuator)
-					action.setValue(signal instanceof String ? (SIGNAL)((GroovuinoMLBinding)this.getBinding()).getVariable(signal) : (SIGNAL)signal)
-					((GroovuinoMLBinding) this.getBinding()).getGroovuinoMLModel().addActionByStateName(name, action)
-					[and: closure]
-				}]
-			}
-			[means: closure]
-		}
 	}
 	
 	// initial state
